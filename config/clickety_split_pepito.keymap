@@ -50,7 +50,7 @@
         hm: homerow_mods {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
-            tapping-term-ms = <150>;
+            tapping-term-ms = <175>;
             quick-tap-ms = <0>;
             flavor = "tap-preferred";
             bindings = <&kp>, <&kp>;
@@ -126,20 +126,20 @@
         lower_osx_layer {
             label = " Nav 1";
             bindings = <
-&trans    &none         &kp F7         &kp F8     &kp F9         &none                            &kp LFT23  &kp LFT12  &kp RGT12  &kp RGT23  &kp VOLUP   &trans
-&trans    &kp C_BRI_DN  &hm LALT F4    &kp F5     &hm LGUI F6    &kp C_BRI_UP                     &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &kp VOLDN   &trans
-&trans    &none         &kp F1         &kp F2     &kp F3         &none                            &kp HOME   &kp PG_DN  &kp PG_UP  &kp END    &kp CAPS    &trans
-                                            &trans     &trans    &trans     &trans      &trans    &trans     &trans     &trans
+&trans    &none         &kp F7         &kp F8          &kp F9     &none                            &kp LFT23  &kp LFT12  &kp RGT12  &kp RGT23  &kp VOLUP   &trans
+&trans    &hm LCTRL C_BRI_DN  &hm LALT F4    &kp F5    &hm LGUI F6     &kp C_BRI_UP                &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &kp VOLDN   &trans
+&trans    &none         &kp F1         &kp F2          &kp F3     &none                            &kp HOME   &kp PG_DN  &kp PG_UP  &kp END    &kp CAPS    &trans
+                                             &trans    &trans     &trans     &trans      &trans    &trans     &trans     &trans
             >;
         };
 
         raise_osx_layer {
             label = " Num 2";
             bindings = <
-&kp MINUS  &kp N1     &kp N2     &kp N3     &kp N4     &kp N5                           &kp N6     &kp N7     &kp N8     &kp N9     &kp N0    &kp EQUAL
-&trans     &kp OSX_SC &kp OSX_EP &kp OSX_FD &kp OSX_CD &trans                           &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &trans    &trans
-&trans     &trans     &trans     &trans     &trans     &trans                           &kp HOME   &kp PG_DN  &kp PG_UP  &kp END    &trans    &trans
-                                 &trans     &trans     &trans     &trans      &trans    &trans     &kp DEL    &trans
+&kp MINUS  &kp N1     &kp N2          &kp N3           &kp N4     &kp N5                           &kp N6     &kp N7     &kp N8     &kp N9     &kp N0    &kp EQUAL
+&trans     &hm LCTRL OSX_SC &hm LALT OSX_EP &kp OSX_FD  &hm LGUI OSX_CD   &trans                   &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &trans    &trans
+&trans     &trans     &trans          &trans           &trans     &trans                           &kp HOME   &kp PG_DN  &kp PG_UP  &kp END    &trans    &trans
+                                      &trans           &trans     &trans     &trans      &trans    &trans     &kp DEL    &trans
             >;
         };
 
@@ -147,7 +147,7 @@
             label = " Adjust";
             bindings = <
 &trans     &kp F1     &kp F2     &kp F3     &kp F4     &kp F5                           &none      &none      &kp VOLUP  &none      &none      &none
-&trans     &kp F6     &kp F7     &kp F8     &kp F9     &kp F10                          &none      &kp VOLDN  &kp VOLUP  &kp LOCK_X &none      &none 
+&trans     &hm LCTRL F6     &hm LALT F7     &kp F8     &hm LGUI F9     &kp F10                     &none      &kp VOLDN  &kp VOLUP  &kp LOCK_X &none      &none 
 &trans     &kp F11    &kp F12    &none      &none      &none                            &none      &kp VOLMT  &none      &none      &none      &trans
                                  &trans     &trans     &trans     &trans      &trans    &trans     &trans     &trans
             >;
