@@ -90,7 +90,7 @@
 
         combo_osx_rbrc {
             timeout-ms = <50>;
-            key-positions = <19 20>;
+            key-positions = <20 21>;
             layers = <QX_M>;
             bindings = <&kp RBRC>;
         };
@@ -114,9 +114,9 @@
         compatible = "zmk,keymap";
 
         default_osx_layer {
-            label = " OSX";
+            label = " Main";
             bindings = <
-&kp TAB    &kp Q          &kp W         &kp E      &kp R         &mt LSFT T                       &kp Y      &kp U         &kp I      &kp O         &kp P             &kp BSLH
+&kp TAB    &kp Q          &kp W         &kp E      &kp R         &kp T                       &kp Y      &kp U         &kp I      &kp O         &kp P             &kp BSLH
 &kp ESC    &hm LCTRL A    &hm LALT S    &kp D      &hm LGUI F    &kp G                            &kp H      &hm RGUI J    &kp K      &hm RALT L    &hm RCTRL SEMI    &kp SQT
 &kp LSHFT  &kp Z          &kp X         &kp C      &kp V         &kp B                            &kp N      &kp M         &kp COMMA  &kp DOT       &kp FSLH          &kp RSHFT
                                         &mo QC_F   &mo QX_A   &kp SPACE   &lt 1 RET    &lt 2 DEL   &kp BSPC   &mo QX_A   &mo QC_F
@@ -124,7 +124,7 @@
         };
 
         lower_osx_layer {
-            label = " Nav 1";
+            label = " Nav";
             bindings = <
 &trans    &none         &kp F7         &kp F8          &kp F9     &none                            &kp LFT23  &kp LFT12  &kp RGT12  &kp RGT23  &kp VOLUP   &trans
 &trans    &hm LCTRL C_BRI_DN  &hm LALT F4    &kp F5    &hm LGUI F6     &kp C_BRI_UP                &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &kp VOLDN   &trans
@@ -134,7 +134,7 @@
         };
 
         raise_osx_layer {
-            label = " Num 2";
+            label = " Nums";
             bindings = <
 &kp MINUS  &kp N1     &kp N2          &kp N3           &kp N4     &kp N5                           &kp N6     &kp N7     &kp N8     &kp N9     &kp N0    &kp EQUAL
 &trans     &hm LCTRL OSX_SC &hm LALT OSX_EP &kp OSX_FD  &hm LGUI OSX_CD   &trans                   &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &trans    &trans
