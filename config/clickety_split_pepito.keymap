@@ -128,7 +128,7 @@
             bindings = <
 &trans    &none         &kp F7         &kp F8          &kp F9     &none                            &kp LFT23  &kp LFT12  &kp RGT12  &kp RGT23  &kp VOLUP   &trans
 &trans    &hm LCTRL C_BRI_DN  &hm LALT F4    &kp F5    &hm LGUI F6     &kp C_BRI_UP                &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &kp VOLDN   &trans
-&trans    &none         &kp F1         &kp F2          &kp F3     &none                            &kp HOME   &kp PG_DN  &kp PG_UP  &kp END    &kp CAPS    &trans
+&trans    &kp LGUI         &kp F1         &kp F2          &kp F3     &kp LGUI                            &kp HOME   &kp PG_DN  &kp PG_UP  &kp END    &kp CAPS    &trans
                                              &trans    &trans     &trans     &trans      &trans    &trans     &trans     &trans
             >;
         };
@@ -138,7 +138,7 @@
             bindings = <
 &kp MINUS  &kp N1     &kp N2          &kp N3           &kp N4     &kp N5                           &kp N6     &kp N7     &kp N8     &kp N9     &kp N0    &kp EQUAL
 &trans     &hm LCTRL OSX_SC &hm LALT OSX_EP &kp OSX_FD  &hm LGUI OSX_CD   &trans                   &kp LEFT   &kp DOWN   &kp UP     &kp RIGHT  &trans    &trans
-&trans     &trans     &trans          &trans           &trans     &trans                           &kp HOME   &kp PG_DN  &kp PG_UP  &kp END    &trans    &trans
+&trans     &kp LGUI     &trans          &trans           &trans     &kp LGUI                           &kp HOME   &kp PG_DN  &kp PG_UP  &kp END    &trans    &trans
                                       &trans           &trans     &trans     &trans      &trans    &trans     &kp DEL    &trans
             >;
         };
