@@ -7,3 +7,12 @@ Voyager uses their software, which I believe is a QMK based keyboard.
 Pepito uses ZMK, and the firmware is built and available in the latest [action](https://github.com/djensenius/keyboards/actions).
 
 To flash the keyboard use the BOOTLDR command and plug the keyboard in.
+
+Main Layer
+![Main Layer](./screenshots/Layer Main.png)
+
+Nav Layer
+![Main Layer](./screenshots/Layer Nav.png)
+
+Nums Layer
+![Main Layer](./screenshots/Layer Nums.png)
