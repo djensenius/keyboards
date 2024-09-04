@@ -8,11 +8,14 @@ Pepito uses ZMK, and the firmware is built and available in the latest [action](
 
 To flash the keyboard use the BOOTLDR command and plug the keyboard in.
 
-Main Layer
-![Main Layer](./screenshots/Layer Main.png)
+## Main Layer
 
-Nav Layer
-![Main Layer](./screenshots/Layer Nav.png)
+![Main Layer](./Screenshots/Main.png)
 
-Nums Layer
-![Main Layer](./screenshots/Layer Nums.png)
+## Nav Layer
+
+![Main Layer](./Screenshots/Nav.png)
+
+## Nums Layer
+
+![Main Layer](./Screenshots/Nums.png)
