@@ -29,6 +29,7 @@
 #define LFT23   LA(LC(LS(H)))
 #define RGT12   LA(LC(U))
 #define RGT23   LA(LC(LS(U)))
+#define FSCREEN LA(LC(LS(LG(G))))
 
 #define BT0     BT_SEL 0
 #define BT1     BT_SEL 1
@@ -107,6 +108,13 @@
             key-positions = <32 33>;
             layers = <QX_M>;
             bindings = <&kp RBKT>;
+        };
+
+        combo_nav_fs {
+            timeout-ms = <50>;
+            key-positions = <7 8>;
+            layers = <QX_L>;
+            bindings = <&kp FSCREEN>;
         };
     };
 
