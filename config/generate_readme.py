@@ -44,6 +44,19 @@ class ZMKKeymapParser:
             'C_VOL_UP': '🔊',
             'C_VOL_DN': '🔉',
             'C_MUTE': '🔇',
+            'C_BRI_UP': 'BRI+',
+            'C_BRI_DN': 'BRI-',
+            'OSX_EP': 'LNCH',
+            'OSX_FD': 'FIND',
+            'OSX_CD': 'CLIP',
+            'OSX_BOL': 'BOL',
+            'OSX_EOL': 'EOL',
+            'LFT12': 'LFT1',
+            'LFT23': 'LFT2',
+            'RGT12': 'RGT1',
+            'RGT23': 'RGT2',
+            'FSCREEN': 'FSCR',
+            'LOCK_X': 'LOCK',
             'TRANS': '▽',
             'NONE': '✗',
             'MINUS': '-',
@@ -61,6 +74,16 @@ class ZMKKeymapParser:
             'COMMA': ',',
             'DOT': '.',
             'FSLH': '/',
+            'N1': '1',
+            'N2': '2',
+            'N3': '3',
+            'N4': '4',
+            'N5': '5',
+            'N6': '6',
+            'N7': '7',
+            'N8': '8',
+            'N9': '9',
+            'N0': '0',
         }
         
         # Layer names
@@ -147,16 +170,16 @@ class ZMKKeymapParser:
             key = binding[3:].strip()
             return self.key_symbols.get(key, key)
         elif binding.startswith('hm '):
-            # Homerow mod: hm LCTRL A -> CTRL+A
+            # Homerow mod: hm LCTRL A -> CT+A
             parts = binding[3:].split()
             if len(parts) >= 2:
-                mod = parts[0].replace('L', '').replace('R', '')
+                mod = parts[0].replace('L', '').replace('R', '').replace('CTRL', 'CT').replace('ALT', 'AT').replace('GUI', 'GM')
                 key = parts[1]
                 key_symbol = self.key_symbols.get(key, key)
                 return f"{mod}+{key_symbol}"
             return binding
         elif binding.startswith('lt '):
-            # Layer tap: lt 1 RET -> LT(NAV,⏎)
+            # Layer tap: lt 1 RET -> LT(N,⏎)
             parts = binding[3:].split()
             if len(parts) >= 2:
                 layer_num = parts[0]
@@ -166,7 +189,7 @@ class ZMKKeymapParser:
                 return f"LT({layer_name},{key_symbol})"
             return binding
         elif binding.startswith('mo '):
-            # Momentary layer: mo QX_A -> MO(ADJ)
+            # Momentary layer: mo QX_A -> MO(A)
             layer = binding[3:].strip()
             layer_name = self._get_layer_name(layer)
             return f"MO({layer_name})"
@@ -177,16 +200,16 @@ class ZMKKeymapParser:
             key = binding[4:].strip()
             return self.key_symbols.get(key, key)
         elif binding.startswith('&hm '):
-            # Homerow mod: &hm LCTRL A -> CTRL+A
+            # Homerow mod: &hm LCTRL A -> CT+A
             parts = binding[4:].split()
             if len(parts) >= 2:
-                mod = parts[0].replace('L', '').replace('R', '')
+                mod = parts[0].replace('L', '').replace('R', '').replace('CTRL', 'CT').replace('ALT', 'AT').replace('GUI', 'GM')
                 key = parts[1]
                 key_symbol = self.key_symbols.get(key, key)
                 return f"{mod}+{key_symbol}"
             return binding
         elif binding.startswith('&lt '):
-            # Layer tap: &lt 1 RET -> LT(NAV,⏎)
+            # Layer tap: &lt 1 RET -> LT(N,⏎)
             parts = binding[4:].split()
             if len(parts) >= 2:
                 layer_num = parts[0]
@@ -196,7 +219,7 @@ class ZMKKeymapParser:
                 return f"LT({layer_name},{key_symbol})"
             return binding
         elif binding.startswith('&mo '):
-            # Momentary layer: &mo QX_A -> MO(ADJ)
+            # Momentary layer: &mo QX_A -> MO(A)
             layer = binding[4:].strip()
             layer_name = self._get_layer_name(layer)
             return f"MO({layer_name})"
@@ -212,7 +235,7 @@ class ZMKKeymapParser:
         elif binding == 'SYSRSET' or binding == '&sys_reset':
             return 'RESET'
         elif binding == '&bt BT_CLR':
-            return 'BT_CLR'
+            return 'BT_C'
         elif binding.startswith('&'):
             # Remove & prefix and try again
             return self._parse_binding(binding[1:])
@@ -281,46 +304,65 @@ class ZMKKeymapParser:
         # Generate the table with better visual representation
         table = []
         table.append("```")
-        table.append("╭─────────────────────────────────────╮    ╭─────────────────────────────────────╮")
-        table.append("│               LEFT HALF              │    │              RIGHT HALF             │")
-        table.append("├─────┬─────┬─────┬─────┬─────┬─────────┤    ├─────────┬─────┬─────┬─────┬─────┬─────┤")
+        table.append("╭───────────────────────────────────────────────╮    ╭───────────────────────────────────────────────╮")
+        table.append("│                   LEFT HALF                   │    │                   RIGHT HALF                  │")
+        table.append("├───────┬───────┬───────┬───────┬───────┬───────┤    ├───────┬───────┬───────┬───────┬───────┬───────┤")
         
-        # Format keys with proper width for readability
+        # Format keys with proper width for readability (6 chars)
         def format_key(key):
-            if len(str(key)) > 4:
-                return str(key)[:4]
-            return str(key)
+            key_str = str(key)
+            if len(key_str) > 6:
+                # Truncate long keys intelligently
+                if 'LT(' in key_str:
+                    # Handle layer taps: LT(NAV,RET) -> LT(N,⏎)
+                    parts = key_str.split(',')
+                    if len(parts) == 2:
+                        layer = parts[0].replace('LT(', '')[:1]  # Get first char of layer
+                        key_part = parts[1].rstrip(')')
+                        return f"LT({layer},{key_part})"[:6]
+                elif 'MO(' in key_str:
+                    # Handle momentary: MO(FIRMWARE) -> MO(FW)
+                    return key_str[:6]
+                elif '+' in key_str and ('CT+' in key_str or 'AT+' in key_str or 'GM+' in key_str):
+                    # Handle homerow mods: CT+C_BRI_DN -> CT+BR-
+                    mod, key_part = key_str.split('+', 1)
+                    # Abbreviate the key part
+                    key_part = self.key_symbols.get(key_part, key_part)
+                    return f"{mod}+{key_part}"[:6]
+                else:
+                    return key_str[:6]
+            return key_str
         
         # Row 1
-        left_formatted = '│'.join([f" {format_key(key):^4} " for key in left_row1])
-        right_formatted = '│'.join([f" {format_key(key):^4} " for key in right_row1])
+        left_formatted = '│'.join([f" {format_key(key):^5} " for key in left_row1])
+        right_formatted = '│'.join([f" {format_key(key):^5} " for key in right_row1])
         table.append(f"│{left_formatted}│    │{right_formatted}│")
         
-        table.append("├─────┼─────┼─────┼─────┼─────┼─────────┤    ├─────────┼─────┼─────┼─────┼─────┼─────┤")
+        table.append("├───────┼───────┼───────┼───────┼───────┼───────┤    ├───────┼───────┼───────┼───────┼───────┼───────┤")
         
         # Row 2
-        left_formatted = '│'.join([f" {format_key(key):^4} " for key in left_row2])
-        right_formatted = '│'.join([f" {format_key(key):^4} " for key in right_row2])
+        left_formatted = '│'.join([f" {format_key(key):^5} " for key in left_row2])
+        right_formatted = '│'.join([f" {format_key(key):^5} " for key in right_row2])
         table.append(f"│{left_formatted}│    │{right_formatted}│")
         
-        table.append("├─────┼─────┼─────┼─────┼─────┼─────────┤    ├─────────┼─────┼─────┼─────┼─────┼─────┤")
+        table.append("├───────┼───────┼───────┼───────┼───────┼───────┤    ├───────┼───────┼───────┼───────┼───────┼───────┤")
         
         # Row 3
-        left_formatted = '│'.join([f" {format_key(key):^4} " for key in left_row3])
-        right_formatted = '│'.join([f" {format_key(key):^4} " for key in right_row3])
+        left_formatted = '│'.join([f" {format_key(key):^5} " for key in left_row3])
+        right_formatted = '│'.join([f" {format_key(key):^5} " for key in right_row3])
         table.append(f"│{left_formatted}│    │{right_formatted}│")
         
-        table.append("╰─────┴─────┴─────┼─────┼─────┼─────────╯    ╰─────────┼─────┼─────┼─────┴─────┴─────╯")
-        table.append("                  │ {:^4} │ {:^4} │                      │ {:^4} │ {:^4} │".format(
+        table.append("╰───────┴───────┴───────┼───────┼───────┼───────╯    ╰───────┼───────┼───────┼───────┴───────┴───────╯")
+        table.append("                        │ {:^5} │ {:^5} │                        │ {:^5} │ {:^5} │".format(
             format_key(left_thumbs[0]), format_key(left_thumbs[1]), 
             format_key(right_thumbs[2]), format_key(right_thumbs[3])
         ))
-        table.append("                  ├─────┼─────┤                      ├─────┼─────┤")
-        table.append("                  │ {:^4} │ {:^4} │                      │ {:^4} │ {:^4} │".format(
+        table.append("                        ├───────┼───────┤                        ├───────┼───────┤")
+        table.append("                        │ {:^5} │ {:^5} │                        │ {:^5} │ {:^5} │".format(
             format_key(left_thumbs[2]), format_key(left_thumbs[3]), 
             format_key(right_thumbs[0]), format_key(right_thumbs[1])
         ))
-        table.append("                  ╰─────┴─────╯                      ╰─────┴─────╯")
+        table.append("                        ╰───────┴───────╯                        ╰───────┴───────╯")
         table.append("```")
         
         return "\n".join(table)
@@ -345,13 +387,36 @@ class ZMKKeymapParser:
         readme.append("- `CTRL+key` = Homerow mod (hold for modifier, tap for key)")
         readme.append("")
         
-        # Generate layer tables
+        # Add Colemak information
+        readme.append("### OS Keyboard Layout Support")
+        readme.append("")
+        readme.append("This keyboard layout is designed to work with both QWERTY and Colemak layouts at the OS level:")
+        readme.append("")
+        readme.append("- **QWERTY**: Use the standard QWERTY layout in your OS settings")
+        readme.append("- **Colemak**: Switch your OS to Colemak layout - the physical key bindings remain the same, but your OS will interpret them as Colemak characters")
+        readme.append("")
+        readme.append("The layers shown below display the physical key positions. When using Colemak at the OS level, the home row will effectively become: **A R S T D** (left) and **H N E I O** (right).")
+        readme.append("")
+        
+        # Generate layer tables with main layer collapsible
         for layer_name, layer_data in self.layers.items():
             if layer_name in self.layer_names:
                 title, subtitle = self.layer_names[layer_name]
-                readme.append(f"### {title} Layer ({subtitle})")
-                readme.append("")
-                readme.append(self.generate_layer_table(layer_name, layer_data))
+                
+                if layer_name == 'default_osx_layer':
+                    # Make QWERTY layer collapsible
+                    readme.append(f"### {title} Layer ({subtitle})")
+                    readme.append("")
+                    readme.append("<details>")
+                    readme.append("<summary>Click to expand QWERTY layout</summary>")
+                    readme.append("")
+                    readme.append(self.generate_layer_table(layer_name, layer_data))
+                    readme.append("")
+                    readme.append("</details>")
+                else:
+                    readme.append(f"### {title} Layer ({subtitle})")
+                    readme.append("")
+                    readme.append(self.generate_layer_table(layer_name, layer_data))
                 readme.append("")
         
         # Add combos section
