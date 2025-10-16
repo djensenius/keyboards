@@ -337,12 +337,12 @@ class ZMKKeymapParser:
         left_row3, right_row3 = row3[:6], row3[6:]
         left_thumbs, right_thumbs = thumbs[:4], thumbs[4:]
         
-        # Generate the table with better visual representation
+        # Generate the table with better visual representation using ASCII characters
         table = []
         table.append("```")
-        table.append("╭───────────────────────────────────────────────╮    ╭───────────────────────────────────────────────╮")
-        table.append("│                   LEFT HALF                   │    │                   RIGHT HALF                  │")
-        table.append("├───────┬───────┬───────┬───────┬───────┬───────┤    ├───────┬───────┬───────┬───────┬───────┬───────┤")
+        table.append("+-----------------------------------------------+    +-----------------------------------------------+")
+        table.append("|                   LEFT HALF                   |    |                   RIGHT HALF                  |")
+        table.append("+-------+-------+-------+-------+-------+-------+    +-------+-------+-------+-------+-------+-------+")
         
         # Format keys with proper width for readability (max 5 chars for centering)
         def format_key(key):
@@ -396,35 +396,35 @@ class ZMKKeymapParser:
             return key_str[:target_len]
         
         # Row 1
-        left_formatted = '│'.join([f" {format_key(key):^5} " for key in left_row1])
-        right_formatted = '│'.join([f" {format_key(key):^5} " for key in right_row1])
-        table.append(f"│{left_formatted}│    │{right_formatted}│")
+        left_formatted = '|'.join([f" {format_key(key):^5} " for key in left_row1])
+        right_formatted = '|'.join([f" {format_key(key):^5} " for key in right_row1])
+        table.append(f"|{left_formatted}|    |{right_formatted}|")
         
-        table.append("├───────┼───────┼───────┼───────┼───────┼───────┤    ├───────┼───────┼───────┼───────┼───────┼───────┤")
+        table.append("+-------+-------+-------+-------+-------+-------+    +-------+-------+-------+-------+-------+-------+")
         
         # Row 2
-        left_formatted = '│'.join([f" {format_key(key):^5} " for key in left_row2])
-        right_formatted = '│'.join([f" {format_key(key):^5} " for key in right_row2])
-        table.append(f"│{left_formatted}│    │{right_formatted}│")
+        left_formatted = '|'.join([f" {format_key(key):^5} " for key in left_row2])
+        right_formatted = '|'.join([f" {format_key(key):^5} " for key in right_row2])
+        table.append(f"|{left_formatted}|    |{right_formatted}|")
         
-        table.append("├───────┼───────┼───────┼───────┼───────┼───────┤    ├───────┼───────┼───────┼───────┼───────┼───────┤")
+        table.append("+-------+-------+-------+-------+-------+-------+    +-------+-------+-------+-------+-------+-------+")
         
         # Row 3
-        left_formatted = '│'.join([f" {format_key(key):^5} " for key in left_row3])
-        right_formatted = '│'.join([f" {format_key(key):^5} " for key in right_row3])
-        table.append(f"│{left_formatted}│    │{right_formatted}│")
+        left_formatted = '|'.join([f" {format_key(key):^5} " for key in left_row3])
+        right_formatted = '|'.join([f" {format_key(key):^5} " for key in right_row3])
+        table.append(f"|{left_formatted}|    |{right_formatted}|")
         
-        table.append("╰───────┴───────┴───────┼───────┼───────┼───────╯    ╰───────┼───────┼───────┼───────┴───────┴───────╯")
-        table.append("                        │ {:^5} │ {:^5} │                        │ {:^5} │ {:^5} │".format(
+        table.append("+-------+-------+-------+-------+-------+-------+    +-------+-------+-------+-------+-------+-------+")
+        table.append("                        | {:^5} | {:^5} |                        | {:^5} | {:^5} |".format(
             format_key(left_thumbs[0]), format_key(left_thumbs[1]), 
             format_key(right_thumbs[2]), format_key(right_thumbs[3])
         ))
-        table.append("                        ├───────┼───────┤                        ├───────┼───────┤")
-        table.append("                        │ {:^5} │ {:^5} │                        │ {:^5} │ {:^5} │".format(
+        table.append("                        +-------+-------+                        +-------+-------+")
+        table.append("                        | {:^5} | {:^5} |                        | {:^5} | {:^5} |".format(
             format_key(left_thumbs[2]), format_key(left_thumbs[3]), 
             format_key(right_thumbs[0]), format_key(right_thumbs[1])
         ))
-        table.append("                        ╰───────┴───────╯                        ╰───────┴───────╯")
+        table.append("                        +-------+-------+                        +-------+-------+")
         table.append("```")
         
         return "\n".join(table)
