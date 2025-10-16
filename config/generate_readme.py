@@ -44,19 +44,31 @@ class ZMKKeymapParser:
             'C_VOL_UP': '🔊',
             'C_VOL_DN': '🔉',
             'C_MUTE': '🔇',
-            'C_BRI_UP': 'BRI+',
-            'C_BRI_DN': 'BRI-',
-            'OSX_EP': 'LNCH',
+            'C_BRI_UP': 'BR+',
+            'C_BRI_DN': 'BR-',
+            'OSX_SC': 'OSX',
+            'OSX_EP': 'LNC',
             'OSX_FD': 'FIND',
-            'OSX_CD': 'CLIP',
+            'OSX_CD': 'CLI',
             'OSX_BOL': 'BOL',
             'OSX_EOL': 'EOL',
+            'LG(LS(N5))': 'OSX',
+            'LC(LG(SPACE))': 'LNC',
+            'LA(LC(SPACE))': 'FIND',
+            'LA(LG(FSLH))': 'CLI',
+            'LG(LEFT)': 'BOL',
+            'LG(RIGHT)': 'EOL',
             'LFT12': 'LFT1',
             'LFT23': 'LFT2',
             'RGT12': 'RGT1',
             'RGT23': 'RGT2',
+            'LA(LC(H))': 'LFT1',
+            'LA(LC(LS(H)))': 'LFT2',
+            'LA(LC(U))': 'RGT1',
+            'LA(LC(LS(U)))': 'RGT2',
             'FSCREEN': 'FSCR',
             'LOCK_X': 'LOCK',
+            'LC(LG(Q))': 'LOCK',
             'TRANS': '▽',
             'NONE': '✗',
             'MINUS': '-',
@@ -100,10 +112,22 @@ class ZMKKeymapParser:
         with open(self.keymap_file, 'r') as f:
             content = f.read()
         
+        # Parse #define macros for key bindings
+        self.macros = {}
+        macro_pattern = r'#define\s+(\w+)\s+(.+?)(?://.*)?(?:\n|$)'
+        for match in re.finditer(macro_pattern, content):
+            macro_name, macro_value = match.groups()
+            # Remove inline comments and extra whitespace
+            macro_value = re.sub(r'//.*$', '', macro_value).strip()
+            self.macros[macro_name] = macro_value
+        
         # Parse layer definitions
         layer_pattern = r'(\w+_layer)\s*\{[^}]*?label\s*=\s*"([^"]*)"[^}]*?bindings\s*=\s*<([^>]*)>'
         for match in re.finditer(layer_pattern, content, re.DOTALL):
             layer_name, label, bindings = match.groups()
+            # Expand macros in bindings
+            for macro_name, macro_value in self.macros.items():
+                bindings = re.sub(r'\b' + macro_name + r'\b', macro_value, bindings)
             keys = self._parse_bindings(bindings)
             self.layers[layer_name] = {
                 'label': label.strip(),
@@ -194,8 +218,14 @@ class ZMKKeymapParser:
             layer_name = self._get_layer_name(layer)
             return f"MO({layer_name})"
         elif binding.startswith('bt '):
-            # Bluetooth: bt BT0 -> BT0
-            return binding[3:].strip()
+            # Bluetooth: bt BT_SEL 0 -> BT0, bt BT_CLR -> BTCLR
+            bt_cmd = binding[3:].strip()
+            if bt_cmd.startswith('BT_SEL '):
+                num = bt_cmd.split()[-1]
+                return f"BT{num}"
+            elif bt_cmd == 'BT_CLR':
+                return 'BTCLR'
+            return bt_cmd
         elif binding.startswith('&kp '):
             key = binding[4:].strip()
             return self.key_symbols.get(key, key)
@@ -224,18 +254,24 @@ class ZMKKeymapParser:
             layer_name = self._get_layer_name(layer)
             return f"MO({layer_name})"
         elif binding.startswith('&bt '):
-            # Bluetooth: &bt BT0 -> BT0
-            return binding[4:].strip()
+            # Bluetooth: &bt BT_SEL 0 -> BT0, &bt BT_CLR -> BTCLR
+            bt_cmd = binding[4:].strip()
+            if bt_cmd.startswith('BT_SEL '):
+                num = bt_cmd.split()[-1]
+                return f"BT{num}"
+            elif bt_cmd == 'BT_CLR':
+                return 'BTCLR'
+            return bt_cmd
         elif binding == 'trans' or binding == '&trans':
             return '▽'
         elif binding == 'none' or binding == '&none':
             return '✗'
-        elif binding == 'BOOTLDR' or binding == '&bootloader':
+        elif binding in ['BOOTLDR', '&bootloader', 'bootloader']:
             return 'BOOT'
-        elif binding == 'SYSRSET' or binding == '&sys_reset':
-            return 'RESET'
-        elif binding == '&bt BT_CLR':
-            return 'BT_C'
+        elif binding in ['SYSRSET', '&sys_reset', 'sys_reset']:
+            return 'RST'
+        elif binding == '&bt BT_CLR' or 'BT_CLR' in binding:
+            return 'BTCLR'
         elif binding.startswith('&'):
             # Remove & prefix and try again
             return self._parse_binding(binding[1:])
@@ -308,30 +344,56 @@ class ZMKKeymapParser:
         table.append("│                   LEFT HALF                   │    │                   RIGHT HALF                  │")
         table.append("├───────┬───────┬───────┬───────┬───────┬───────┤    ├───────┬───────┬───────┬───────┬───────┬───────┤")
         
-        # Format keys with proper width for readability (6 chars)
+        # Format keys with proper width for readability (max 5 chars for centering)
         def format_key(key):
             key_str = str(key)
-            if len(key_str) > 6:
-                # Truncate long keys intelligently
-                if 'LT(' in key_str:
-                    # Handle layer taps: LT(NAV,RET) -> LT(N,⏎)
-                    parts = key_str.split(',')
-                    if len(parts) == 2:
-                        layer = parts[0].replace('LT(', '')[:1]  # Get first char of layer
-                        key_part = parts[1].rstrip(')')
-                        return f"LT({layer},{key_part})"[:6]
-                elif 'MO(' in key_str:
-                    # Handle momentary: MO(FIRMWARE) -> MO(FW)
-                    return key_str[:6]
-                elif '+' in key_str and ('CT+' in key_str or 'AT+' in key_str or 'GM+' in key_str):
-                    # Handle homerow mods: CT+C_BRI_DN -> CT+BR-
-                    mod, key_part = key_str.split('+', 1)
-                    # Abbreviate the key part
-                    key_part = self.key_symbols.get(key_part, key_part)
-                    return f"{mod}+{key_part}"[:6]
-                else:
-                    return key_str[:6]
-            return key_str
+            target_len = 5  # Target length for consistent cell width
+            
+            if len(key_str) <= target_len:
+                return key_str
+            
+            # Truncate long keys intelligently
+            if 'LT(' in key_str:
+                # Handle layer taps: LT(NAV,RET) -> N:⏎ or similar
+                # Extract layer and key from LT(layer,key)
+                match = re.match(r'LT\((\w+),(.+?)\)', key_str)
+                if match:
+                    layer = match.group(1)
+                    key_part = match.group(2)
+                    # Use single letter for layer
+                    layer_abbr = layer[0] if layer else 'L'
+                    # Format as L:key (3 chars minimum)
+                    result = f"{layer_abbr}:{key_part}"
+                    if len(result) <= target_len:
+                        return result
+                    # If still too long, truncate
+                    return result[:target_len]
+                # Fallback truncation
+                return key_str[:target_len]
+            
+            elif 'MO(' in key_str:
+                # Handle momentary: MO(FIRMWARE) -> MO(FW) or MO(F)
+                match = re.match(r'MO\((\w+)\)', key_str)
+                if match:
+                    layer = match.group(1)
+                    # Use short abbreviation
+                    result = f"MO({layer[:2]})"
+                    if len(result) <= target_len:
+                        return result
+                    return f"M:{layer[0]}"  # Even shorter: M:F
+                return key_str[:target_len]
+            
+            elif '+' in key_str and ('CT+' in key_str or 'AT+' in key_str or 'GM+' in key_str):
+                # Handle homerow mods: CT+C_BRI_DN -> CT+BR
+                mod, key_part = key_str.split('+', 1)
+                # Abbreviate the key part to fit
+                remaining = target_len - len(mod) - 1  # -1 for the '+'
+                if len(key_part) > remaining:
+                    key_part = key_part[:remaining]
+                return f"{mod}+{key_part}"
+            
+            # Default truncation
+            return key_str[:target_len]
         
         # Row 1
         left_formatted = '│'.join([f" {format_key(key):^5} " for key in left_row1])
