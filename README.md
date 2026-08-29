@@ -19,3 +19,7 @@ To flash the keyboard use the BOOTLDR command and plug the keyboard in.
 ## Nums Layer
 
 ![Main Layer](./Screenshots/Nums.png)
+
+## Mouse layer
+
+![Mouse Layer](./Screenshots/Mouse.png)
